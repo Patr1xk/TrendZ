@@ -9,6 +9,7 @@ import seaborn as sns
 from sklearn.linear_model import LinearRegression
 from datetime import datetime, timedelta
 import json
+from pathlib import Path
 
 # Page configuration
 st.set_page_config(
@@ -95,6 +96,87 @@ def generate_trend_data(trend_name, days=30):
         'acceleration': np.gradient(np.gradient(mentions))
     })
 
+def load_trend_csv(uploaded_file_or_path, trend_name_hint=None):
+    """Load time-series CSV with columns: date, mentions. Returns normalized DataFrame or None on failure."""
+    try:
+        if uploaded_file_or_path is None:
+            return None
+        df = pd.read_csv(uploaded_file_or_path)
+        # Normalize column names
+        cols = {c.lower().strip(): c for c in df.columns}
+        date_col = cols.get('date') or cols.get('timestamp')
+        mentions_col = cols.get('mentions') or cols.get('count') or cols.get('volume')
+        if date_col is None or mentions_col is None:
+            return None
+        df = df[[date_col, mentions_col]].rename(columns={date_col: 'date', mentions_col: 'mentions'})
+        df['date'] = pd.to_datetime(df['date'])
+        df = df.sort_values('date')
+        df['mentions'] = pd.to_numeric(df['mentions'], errors='coerce').fillna(0)
+        df['growth_rate'] = np.gradient(df['mentions'])
+        df['acceleration'] = np.gradient(np.gradient(df['mentions']))
+        return df
+    except Exception:
+        return None
+
+def create_forecast(trend_data, horizon_days=14, window=10):
+    """Create a simple linear regression forecast on the latest window."""
+    if len(trend_data) < max(5, window):
+        window = min(window, len(trend_data))
+    y = trend_data['mentions'].tail(window).values.reshape(-1, 1)
+    X = np.arange(window).reshape(-1, 1)
+    model = LinearRegression()
+    model.fit(X, y)
+    future_X = np.arange(window, window + horizon_days).reshape(-1, 1)
+    y_pred = model.predict(future_X).ravel()
+    last_date = trend_data['date'].iloc[-1]
+    future_dates = pd.date_range(start=last_date + pd.Timedelta(days=1), periods=horizon_days, freq='D')
+    forecast_df = pd.DataFrame({'date': future_dates, 'mentions': np.maximum(0, y_pred)})
+    return forecast_df
+
+def predict_lifecycle_with_forecast(trend_data, forecast_horizon=14):
+    """Determine lifecycle stage and FOMO using recent derivatives and short-term forecast."""
+    forecast_df = create_forecast(trend_data, horizon_days=forecast_horizon)
+    recent_growth = trend_data['growth_rate'].tail(7).mean()
+    recent_accel = trend_data['acceleration'].tail(7).mean()
+
+    if recent_growth > 30 and recent_accel > 0:
+        stage = "Emerging"
+        color = "green"
+    elif recent_growth > 10 and recent_accel >= 0:
+        stage = "Growing"
+        color = "blue"
+    elif recent_growth > -10:
+        stage = "Mature"
+        color = "orange"
+    else:
+        stage = "Decaying"
+        color = "red"
+
+    combined = pd.concat([
+        trend_data[['date', 'mentions']],
+        forecast_df[['date', 'mentions']]
+    ], ignore_index=True)
+    peak_idx = combined['mentions'].idxmax()
+    peak_date = combined.loc[peak_idx, 'date']
+    today = trend_data['date'].iloc[-1]
+    days_to_peak = (peak_date.date() - today.date()).days
+
+    peak_value = combined['mentions'].max()
+    threshold = 0.9 * peak_value
+    future_mask = combined['date'] >= today
+    above_threshold = combined[future_mask & (combined['mentions'] >= threshold)]
+    remaining_peak_days = above_threshold['date'].nunique()
+
+    if days_to_peak > 0:
+        fomo_text = f"Trend expected to peak in {days_to_peak} days; {remaining_peak_days} high-impact days ahead."
+    elif days_to_peak == 0:
+        fomo_text = "Trend is peaking now — act immediately for maximum impact!"
+    else:
+        days_since_peak = abs(days_to_peak)
+        fomo_text = f"Peak passed {days_since_peak} days ago; impact declining."
+
+    return stage, fomo_text, color, forecast_df, peak_date, remaining_peak_days
+
 def generate_audience_data(trend_name):
     """Generate mock audience demographics data"""
     if trend_name.lower() in ['glassskin', 'dewy makeup']:
@@ -140,28 +222,9 @@ def calculate_trend_score(trend_data, audience_data, platform_data):
     return min(100, max(0, total_score))
 
 def predict_trend_lifecycle(trend_data):
-    """Predict trend lifecycle stage and FOMO timer"""
-    recent_growth = trend_data['growth_rate'].tail(7).mean()
-    recent_acceleration = trend_data['acceleration'].tail(7).mean()
-    
-    if recent_growth > 50 and recent_acceleration > 0:
-        stage = "Emerging"
-        fomo_timer = "Trend is emerging - perfect time to join!"
-        color = "green"
-    elif recent_growth > 20:
-        stage = "Growing"
-        fomo_timer = "Trend is growing - hop on now for maximum impact!"
-        color = "blue"
-    elif recent_growth > -20:
-        stage = "Mature"
-        fomo_timer = "Trend is mature - safe to join but lower impact"
-        color = "orange"
-    else:
-        stage = "Decaying"
-        fomo_timer = "Trend is decaying - too late to join effectively"
-        color = "red"
-    
-    return stage, fomo_timer, color
+    # Backward-compatible wrapper using regression-enhanced prediction
+    stage, fomo_text, color, _, _, _ = predict_lifecycle_with_forecast(trend_data)
+    return stage, fomo_text, color
 
 def create_lifecycle_curve(trend_data, trend_name):
     """Create the main lifecycle curve visualization"""
@@ -176,6 +239,19 @@ def create_lifecycle_curve(trend_data, trend_name):
         line=dict(color='#FF6B9D', width=3),
         marker=dict(size=8)
     ))
+
+    # Optional forecast line
+    try:
+        forecast_df = create_forecast(trend_data)
+        fig.add_trace(go.Scatter(
+            x=forecast_df['date'],
+            y=forecast_df['mentions'],
+            mode='lines',
+            name='Forecast',
+            line=dict(color='#222222', width=2, dash='dot')
+        ))
+    except Exception:
+        pass
     
     # Add growth rate line
     fig.add_trace(go.Scatter(
@@ -257,13 +333,22 @@ def main():
     
     st.sidebar.markdown("---")
     st.sidebar.markdown("### 📊 Quick Stats")
+
+    # Optional CSV uploader for PowerBI-like flexibility
+    st.sidebar.markdown("### 📥 Upload CSV (date, mentions)")
+    uploaded_csv = st.sidebar.file_uploader("Upload a CSV to override mock data", type=["csv"])        
     
-    # Generate data for selected trend
-    trend_data = generate_trend_data(selected_trend)
+    # Generate data for selected trend (CSV override if provided)
+    trend_data = None
+    if uploaded_csv is not None:
+        trend_data = load_trend_csv(uploaded_csv, trend_name_hint=selected_trend)
+    if trend_data is None:
+        # Fallback to mock
+        trend_data = generate_trend_data(selected_trend)
     audience_data = generate_audience_data(selected_trend)
     platform_data = generate_platform_data(selected_trend)
     trend_score = calculate_trend_score(trend_data, audience_data, platform_data)
-    stage, fomo_timer, color = predict_trend_lifecycle(trend_data)
+    stage, fomo_timer, color, forecast_df, peak_date, remaining_peak_days = predict_lifecycle_with_forecast(trend_data)
     
     # Display quick stats in sidebar
     st.sidebar.metric("Current Mentions", f"{trend_data['mentions'].iloc[-1]:,}")
@@ -282,16 +367,21 @@ def main():
         
         # Trend insights
         st.markdown("### 🔍 Trend Insights")
-        col1_1, col1_2, col1_3 = st.columns(3)
+        col1_1, col1_2, col1_3, col1_4 = st.columns(4)
         
         with col1_1:
             st.metric("Peak Mentions", f"{trend_data['mentions'].max():,}")
         
         with col1_2:
-            st.metric("Average Growth", f"{trend_data['growth_rate'].mean():.1f}")
+            st.metric("Velocity (Growth)", f"{trend_data['growth_rate'].iloc[-1]:.1f}")
         
         with col1_3:
-            st.metric("Total Mentions", f"{trend_data['mentions'].sum():,}")
+            st.metric("Acceleration", f"{trend_data['acceleration'].iloc[-1]:.1f}")
+
+        with col1_4:
+            st.metric("Peak Date", peak_date.strftime('%Y-%m-%d'))
+
+        st.info("Optimal Entry: when acceleration turns positive and velocity > 10. You're currently in: " + stage)
     
     with col2:
         # TrendScore
@@ -311,16 +401,33 @@ def main():
             <p>{fomo_timer}</p>
         </div>
         """, unsafe_allow_html=True)
+
+        # KPI Gauge (PowerBI-style)
+        gauge = go.Figure(go.Indicator(
+            mode="gauge+number",
+            value=trend_score,
+            number={'suffix': "/100"},
+            gauge={
+                'axis': {'range': [0, 100]},
+                'bar': {'color': '#764ba2'},
+                'steps': [
+                    {'range': [0, 40], 'color': '#f8d7da'},
+                    {'range': [40, 70], 'color': '#fff3cd'},
+                    {'range': [70, 100], 'color': '#d4edda'}
+                ]
+            },
+            title={'text': 'Opportunity Gauge'}
+        ))
+        gauge.update_layout(height=260, margin=dict(l=10, r=10, t=40, b=0))
+        st.plotly_chart(gauge, use_container_width=True)
         
-        # FOMO Timer
-        if stage in ["Emerging", "Growing"]:
-            days_left = np.random.randint(5, 25)
-            st.markdown(f"""
-            <div class="metric-card">
-                <h4>⏰ FOMO Timer</h4>
-                <p>This trend has an estimated <strong>{days_left} days</strong> of peak engagement left!</p>
-            </div>
-            """, unsafe_allow_html=True)
+        # FOMO Timer (regression-driven)
+        st.markdown(f"""
+        <div class="metric-card">
+            <h4>⏰ FOMO Timer</h4>
+            <p>{fomo_timer}</p>
+        </div>
+        """, unsafe_allow_html=True)
     
     # Audience and Platform Analysis
     st.markdown("---")
@@ -370,6 +477,33 @@ def main():
         
         if platform_data['TikTok'] > 30:
             st.markdown("- **TikTok** is the primary driver - perfect for short-form content")
+
+    # Creator Archetypes
+    st.markdown("---")
+    st.markdown("## 🧑‍🎨 Creator Archetypes")
+    archetypes = pd.DataFrame({
+        'Archetype': [
+            'Aesthetic Gurus', 'Derm-Educators', 'Makeup Artists', 'Lifestyle Vloggers', 'Eco-Beauty Advocates'
+        ],
+        'Share': [28, 18, 24, 20, 10]
+    })
+    col_ca1, col_ca2 = st.columns([1, 1])
+    with col_ca1:
+        fig_arch = px.bar(archetypes, x='Archetype', y='Share', color='Share', color_continuous_scale='PuRd')
+        fig_arch.update_layout(height=360, xaxis_title='', yaxis_title='Share (%)')
+        st.plotly_chart(fig_arch, use_container_width=True)
+    with col_ca2:
+        donut = px.pie(archetypes, values='Share', names='Archetype', hole=0.5, color_discrete_sequence=px.colors.sequential.Purples)
+        donut.update_layout(height=360)
+        st.plotly_chart(donut, use_container_width=True)
+
+    st.markdown("### 👤 Sample Creators")
+    creators = pd.DataFrame({
+        'Handle': ['@glowbymia', '@dermfacts', '@artistry_lee', '@dailyviolet', '@eco_bea'],
+        'Archetype': ['Aesthetic Gurus', 'Derm-Educators', 'Makeup Artists', 'Lifestyle Vloggers', 'Eco-Beauty Advocates'],
+        'Avg Views': ['120k', '95k', '140k', '80k', '60k']
+    })
+    st.dataframe(creators, use_container_width=True)
     
     # Actionable Recommendations
     st.markdown("---")
