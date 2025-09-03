@@ -363,7 +363,7 @@ def main():
         
         # Lifecycle curve
         lifecycle_fig = create_lifecycle_curve(trend_data, selected_trend)
-        st.plotly_chart(lifecycle_fig, use_container_width=True)
+        st.plotly_chart(lifecycle_fig, width='stretch')
         
         # Trend insights
         st.markdown("### 🔍 Trend Insights")
@@ -419,7 +419,7 @@ def main():
             title={'text': 'Opportunity Gauge'}
         ))
         gauge.update_layout(height=260, margin=dict(l=10, r=10, t=40, b=0))
-        st.plotly_chart(gauge, use_container_width=True)
+        st.plotly_chart(gauge, width='stretch')
         
         # FOMO Timer (regression-driven)
         st.markdown(f"""
@@ -447,7 +447,7 @@ def main():
             color_discrete_sequence=px.colors.qualitative.Set3
         )
         fig_audience.update_layout(height=400)
-        st.plotly_chart(fig_audience, use_container_width=True)
+        st.plotly_chart(fig_audience, width='stretch')
         
         # Audience insights
         st.markdown("#### 💡 Key Insights")
@@ -468,7 +468,7 @@ def main():
             color_continuous_scale='Viridis'
         )
         fig_platform.update_layout(height=400)
-        st.plotly_chart(fig_platform, use_container_width=True)
+        st.plotly_chart(fig_platform, width='stretch')
         
         # Platform insights
         st.markdown("#### 💡 Key Insights")
@@ -491,11 +491,11 @@ def main():
     with col_ca1:
         fig_arch = px.bar(archetypes, x='Archetype', y='Share', color='Share', color_continuous_scale='PuRd')
         fig_arch.update_layout(height=360, xaxis_title='', yaxis_title='Share (%)')
-        st.plotly_chart(fig_arch, use_container_width=True)
+        st.plotly_chart(fig_arch, width='stretch')
     with col_ca2:
         donut = px.pie(archetypes, values='Share', names='Archetype', hole=0.5, color_discrete_sequence=px.colors.sequential.Purples)
         donut.update_layout(height=360)
-        st.plotly_chart(donut, use_container_width=True)
+        st.plotly_chart(donut, width='stretch')
 
     st.markdown("### 👤 Sample Creators")
     creators = pd.DataFrame({
@@ -503,7 +503,7 @@ def main():
         'Archetype': ['Aesthetic Gurus', 'Derm-Educators', 'Makeup Artists', 'Lifestyle Vloggers', 'Eco-Beauty Advocates'],
         'Avg Views': ['120k', '95k', '140k', '80k', '60k']
     })
-    st.dataframe(creators, use_container_width=True)
+    st.dataframe(creators, width='stretch')
     
     # Actionable Recommendations
     st.markdown("---")
@@ -579,4 +579,4 @@ def main():
     """, unsafe_allow_html=True)
 
 if __name__ == "__main__":
-    main() 
+    main()
