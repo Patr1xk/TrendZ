@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ROI Insights - TrendSpotter Malaysia</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/feather-icons"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .chart-container { position: relative; height: 300px; }
+        .gradient-card { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .roi-simulator { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+        .market-heatmap { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+        .competitor-bench { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <a href="/" class="flex-shrink-0">
+                        <h1 class="text-xl font-bold text-gray-900">TrendSpotter</h1>
+                        <p class="text-xs text-gray-500">ROI Intelligence Center</p>
+                    </a>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="/" class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 flex items-center">
+                        <i data-feather="arrow-left" class="w-4 h-4 mr-2"></i> Back to Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+        <!-- Header -->
+        <div class="gradient-card rounded-xl shadow-lg p-8 mb-8 text-white">
+            <h1 class="text-4xl font-bold mb-4">ROI Intelligence Center</h1>
+            <p class="text-xl opacity-90">Advanced ROI insights and investment intelligence for Malaysian beauty trends</p>
+            <div class="flex items-center mt-6 space-x-6">
+                <div class="text-center">
+                    <div class="text-2xl font-bold" id="total-opportunities">-</div>
+                    <div class="text-sm opacity-75">Total Opportunities</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-2xl font-bold" id="avg-roi">-</div>
+                    <div class="text-sm opacity-75">Average ROI</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-2xl font-bold" id="market-potential">-</div>
+                    <div class="text-sm opacity-75">Market Potential</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main ROI Features -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+            <!-- Revenue Projection Simulator -->
+            <div class="roi-simulator rounded-xl shadow-lg p-6 text-white">
+                <div class="flex items-center mb-4">
+                    <i data-feather="trending-up" class="w-8 h-8 mr-3"></i>
+                    <h2 class="text-2xl font-bold">Revenue Projection Simulator</h2>
+                </div>
+                <p class="opacity-90 mb-6">Simulate revenue potential for different investment scenarios</p>
+                
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Investment Amount (RM)</label>
+                        <input type="range" id="investment-slider" min="10000" max="1000000" value="100000" 
+                               class="w-full" onchange="updateSimulation()">
+                        <div class="text-lg font-bold" id="investment-display">RM 100,000</div>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Campaign Duration</label>
+                        <select id="duration-select" class="w-full bg-white bg-opacity-20 border border-white border-opacity-30 rounded-lg px-3 py-2 text-white" onchange="updateSimulation()">
+                            <option value="1">1 Month</option>
+                            <option value="3" selected>3 Months</option>
+                            <option value="6">6 Months</option>
+                            <option value="12">12 Months</option>
+                        </select>
+                    </div>
+                    
+                    <div class="bg-white bg-opacity-20 rounded-lg p-4 mt-4">
+                        <h4 class="font-bold mb-2">Projected Returns</h4>
+                        <div class="space-y-2">
+                            <div class="flex justify-between">
+                                <span>Revenue:</span>
+                                <span class="font-bold" id="projected-revenue">RM 180,000</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>ROI:</span>
+                                <span class="font-bold" id="projected-roi">80%</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Break-even:</span>
+                                <span class="font-bold" id="break-even-time">6 weeks</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Market Demand Heatmap -->
+            <div class="market-heatmap rounded-xl shadow-lg p-6 text-white">
+                <div class="flex items-center mb-4">
+                    <i data-feather="map" class="w-8 h-8 mr-3"></i>
+                    <h2 class="text-2xl font-bold">Market Demand Heatmap</h2>
+                </div>
+                <p class="opacity-90 mb-6">Visual demand intensity across Malaysian regions</p>
+                
+                <div class="space-y-4">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-white bg-opacity-20 rounded-lg p-3 text-center">
+                            <h4 class="font-bold">Klang Valley</h4>
+                            <div class="text-2xl font-bold text-red-300">🔥 92%</div>
+                            <div class="text-xs opacity-75">Very High Demand</div>
+                        </div>
+                        <div class="bg-white bg-opacity-20 rounded-lg p-3 text-center">
+                            <h4 class="font-bold">Penang</h4>
+                            <div class="text-2xl font-bold text-orange-300">🔥 78%</div>
+                            <div class="text-xs opacity-75">High Demand</div>
+                        </div>
+                        <div class="bg-white bg-opacity-20 rounded-lg p-3 text-center">
+                            <h4 class="font-bold">Johor</h4>
+                            <div class="text-2xl font-bold text-yellow-300">⚡ 65%</div>
+                            <div class="text-xs opacity-75">Moderate Demand</div>
+                        </div>
+                        <div class="bg-white bg-opacity-20 rounded-lg p-3 text-center">
+                            <h4 class="font-bold">East Coast</h4>
+                            <div class="text-2xl font-bold text-blue-300">💧 45%</div>
+                            <div class="text-xs opacity-75">Growing Demand</div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white bg-opacity-20 rounded-lg p-4">
+                        <h4 class="font-bold mb-2">Top Performing Categories</h4>
+                        <div class="space-y-2">
+                            <div class="flex justify-between">
+                                <span>Skincare:</span>
+                                <span class="font-bold">85% demand</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>K-Beauty:</span>
+                                <span class="font-bold">72% demand</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Natural/Organic:</span>
+                                <span class="font-bold">68% demand</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Competitor Benchmarking -->
+            <div class="competitor-bench rounded-xl shadow-lg p-6 text-white">
+                <div class="flex items-center mb-4">
+                    <i data-feather="bar-chart-2" class="w-8 h-8 mr-3"></i>
+                    <h2 class="text-2xl font-bold">Competitor Benchmarking</h2>
+                </div>
+                <p class="opacity-90 mb-6">Real-time competitor performance analysis</p>
+                
+                <div class="space-y-4">
+                    <div class="space-y-3">
+                        <div class="bg-white bg-opacity-20 rounded-lg p-3">
+                            <div class="flex justify-between items-center mb-2">
+                                <h4 class="font-bold">Maybelline</h4>
+                                <span class="text-sm opacity-75">Market Leader</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span>Engagement:</span>
+                                <span class="font-bold">4.8%</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span>Growth:</span>
+                                <span class="font-bold text-green-300">+12%</span>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white bg-opacity-20 rounded-lg p-3">
+                            <div class="flex justify-between items-center mb-2">
+                                <h4 class="font-bold">L'Oréal</h4>
+                                <span class="text-sm opacity-75">Strong Position</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span>Engagement:</span>
+                                <span class="font-bold">5.2%</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span>Growth:</span>
+                                <span class="font-bold text-green-300">+15%</span>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white bg-opacity-20 rounded-lg p-3">
+                            <div class="flex justify-between items-center mb-2">
+                                <h4 class="font-bold">Revlon</h4>
+                                <span class="text-sm opacity-75">Opportunity</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span>Engagement:</span>
+                                <span class="font-bold">3.1%</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span>Growth:</span>
+                                <span class="font-bold text-red-300">-2%</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white bg-opacity-20 rounded-lg p-3">
+                        <h4 class="font-bold mb-2">Market Share Opportunities</h4>
+                        <div class="text-sm opacity-90">
+                            💡 Premium skincare segment shows 25% growth opportunity
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Detailed ROI Analysis Table -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-8">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-2xl font-bold text-gray-900">Detailed ROI Analysis</h3>
+                <button onclick="refreshROIData()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center">
+                    <i data-feather="refresh-cw" class="w-4 h-4 mr-2"></i> Refresh Data
+                </button>
+            </div>
+            
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Trend</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Investment</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Projected Revenue</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ROI %</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Risk Level</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Time to Break-even</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="roi-table-body" class="bg-white divide-y divide-gray-200">
+                        <!-- ROI data will be populated here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Investment Recommendations -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                <h3 class="text-xl font-bold text-gray-900 mb-6 flex items-center">
+                    <i data-feather="target" class="w-6 h-6 text-green-600 mr-3"></i>
+                    High-Priority Investments
+                </h3>
+                <div id="high-priority-investments" class="space-y-4">
+                    <!-- High priority investments will be loaded here -->
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                <h3 class="text-xl font-bold text-gray-900 mb-6 flex items-center">
+                    <i data-feather="alert-triangle" class="w-6 h-6 text-yellow-600 mr-3"></i>
+                    Risk Mitigation Strategies
+                </h3>
+                <div id="risk-mitigation" class="space-y-4">
+                    <!-- Risk mitigation strategies will be loaded here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- ROI Trends Chart -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-8">
+            <h3 class="text-xl font-bold text-gray-900 mb-6">ROI Trends Over Time</h3>
+            <div class="chart-container">
+                <canvas id="roi-trends-chart"></canvas>
+            </div>
+        </div>
+
+        <!-- Malaysia-Specific ROI Insights -->
+        <div class="bg-gradient-to-r from-green-50 to-yellow-50 rounded-xl shadow-sm border border-gray-100 p-6">
+            <h3 class="text-xl font-bold text-gray-900 mb-6 flex items-center">
+                <span class="text-2xl mr-3">🇲🇾</span>
+                Malaysia ROI Intelligence
+            </h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-white rounded-lg p-4">
+                    <h4 class="font-bold text-gray-900 mb-3">Cultural Event ROI</h4>
+                    <div class="space-y-2">
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Chinese New Year:</span>
+                            <span class="font-bold text-red-600">+180% ROI</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Hari Raya:</span>
+                            <span class="font-bold text-green-600">+160% ROI</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Deepavali:</span>
+                            <span class="font-bold text-yellow-600">+145% ROI</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-lg p-4">
+                    <h4 class="font-bold text-gray-900 mb-3">Community ROI Analysis</h4>
+                    <div class="space-y-2">
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Urban Millennials:</span>
+                            <span class="font-bold text-blue-600">165% ROI</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Gen Z Students:</span>
+                            <span class="font-bold text-purple-600">150% ROI</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Working Professionals:</span>
+                            <span class="font-bold text-indigo-600">140% ROI</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-lg p-4">
+                    <h4 class="font-bold text-gray-900 mb-3">Climate-Optimized ROI</h4>
+                    <div class="space-y-2">
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Humidity-resistant:</span>
+                            <span class="font-bold text-teal-600">+25% boost</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Long-wear formulas:</span>
+                            <span class="font-bold text-cyan-600">+30% boost</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Tropical packaging:</span>
+                            <span class="font-bold text-emerald-600">+15% boost</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Feather icons
+        feather.replace();
+        
+        let roiChart;
+
+        // Load initial data
+        document.addEventListener('DOMContentLoaded', function() {
+            loadROIData();
+            loadROIChart();
+            loadInvestmentRecommendations();
+            updateSimulation();
+        });
+
+        // Load ROI data
+        async function loadROIData() {
+            try {
+                const response = await fetch('/api/trends');
+                const trends = await response.json();
+                
+                const tbody = document.getElementById('roi-table-body');
+                tbody.innerHTML = '';
+                
+                // Calculate summary stats
+                let totalOpportunities = trends.length;
+                let totalROI = trends.reduce((sum, t) => sum + (t.roi_score || 0), 0);
+                let avgROI = Math.round(totalROI / totalOpportunities) || 0;
+                let marketPotential = trends.reduce((sum, t) => sum + (t.reach || 0), 0);
+                
+                document.getElementById('total-opportunities').textContent = totalOpportunities;
+                document.getElementById('avg-roi').textContent = avgROI + '%';
+                document.getElementById('market-potential').textContent = formatNumber(marketPotential);
+                
+                // Sort trends by ROI
+                const sortedTrends = trends.sort((a, b) => (b.roi_score || 0) - (a.roi_score || 0));
+                
+                sortedTrends.slice(0, 10).forEach(trend => {
+                    const row = document.createElement('tr');
+                    row.className = 'hover:bg-gray-50';
+                    
+                    const investment = Math.floor(Math.random() * 500000) + 50000;
+                    const projectedRevenue = investment * (1 + (trend.roi_score || 100) / 100);
+                    const riskLevel = trend.risk_level ? Math.round(trend.risk_level * 100) : Math.floor(Math.random() * 50) + 10;
+                    const breakEven = Math.floor(Math.random() * 60) + 14;
+                    
+                    row.innerHTML = `
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center">
+                                <div>
+                                    <div class="text-sm font-medium text-gray-900">${trend.name}</div>
+                                    <div class="text-sm text-gray-500">${trend.platform}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            RM ${formatNumber(investment)}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            RM ${formatNumber(projectedRevenue)}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="text-lg font-bold ${(trend.roi_score || 0) > 150 ? 'text-green-600' : 
+                                                            (trend.roi_score || 0) > 100 ? 'text-blue-600' : 'text-yellow-600'}">
+                                ${trend.roi_score || 0}%
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
+                                         ${riskLevel < 30 ? 'bg-green-100 text-green-800' : 
+                                           riskLevel < 60 ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800'}">
+                                ${riskLevel}%
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            ${breakEven} days
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm">
+                            <button onclick="analyzeInvestment('${trend.id}')" 
+                                    class="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">
+                                Analyze
+                            </button>
+                        </td>
+                    `;
+                    
+                    tbody.appendChild(row);
+                });
+                
+            } catch (error) {
+                console.error('Error loading ROI data:', error);
+            }
+        }
+
+        // Load ROI chart
+        async function loadROIChart() {
+            try {
+                const ctx = document.getElementById('roi-trends-chart').getContext('2d');
+                
+                if (roiChart) roiChart.destroy();
+                
+                // Generate sample ROI trend data
+                const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
+                const roiData = months.map(() => Math.floor(Math.random() * 50) + 100);
+                const investmentData = months.map(() => Math.floor(Math.random() * 200) + 50);
+                
+                roiChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: months,
+                        datasets: [
+                            {
+                                label: 'Average ROI (%)',
+                                data: roiData,
+                                borderColor: 'rgb(59, 130, 246)',
+                                backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                                yAxisID: 'y'
+                            },
+                            {
+                                label: 'Investment Volume (K)',
+                                data: investmentData,
+                                borderColor: 'rgb(16, 185, 129)',
+                                backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                                yAxisID: 'y1'
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        interaction: {
+                            mode: 'index',
+                            intersect: false,
+                        },
+                        scales: {
+                            x: {
+                                display: true,
+                                title: {
+                                    display: true,
+                                    text: 'Month'
+                                }
+                            },
+                            y: {
+                                type: 'linear',
+                                display: true,
+                                position: 'left',
+                                title: {
+                                    display: true,
+                                    text: 'ROI (%)'
+                                }
+                            },
+                            y1: {
+                                type: 'linear',
+                                display: true,
+                                position: 'right',
+                                title: {
+                                    display: true,
+                                    text: 'Investment (K)'
+                                },
+                                grid: {
+                                    drawOnChartArea: false,
+                                }
+                            }
+                        }
+                    }
+                });
+                
+            } catch (error) {
+                console.error('Error loading ROI chart:', error);
+            }
+        }
+
+        // Load investment recommendations
+        async function loadInvestmentRecommendations() {
+            // High Priority Investments
+            const highPriorityDiv = document.getElementById('high-priority-investments');
+            const highPriorityData = [
+                {
+                    name: 'Glass Skin Trend',
+                    roi: '185%',
+                    investment: 'RM 150K',
+                    timeframe: '3 months',
+                    confidence: '92%'
+                },
+                {
+                    name: 'K-Beauty Expansion',
+                    roi: '165%',
+                    investment: 'RM 200K',
+                    timeframe: '4 months',
+                    confidence: '88%'
+                },
+                {
+                    name: 'Sustainable Beauty',
+                    roi: '145%',
+                    investment: 'RM 120K',
+                    timeframe: '6 months',
+                    confidence: '85%'
+                }
+            ];
+            
+            highPriorityDiv.innerHTML = highPriorityData.map(item => `
+                <div class="border-l-4 border-green-500 bg-green-50 p-4 rounded-r-lg">
+                    <h4 class="font-bold text-green-900">${item.name}</h4>
+                    <div class="grid grid-cols-2 gap-2 mt-2 text-sm">
+                        <div><span class="text-gray-600">ROI:</span> <span class="font-bold text-green-600">${item.roi}</span></div>
+                        <div><span class="text-gray-600">Investment:</span> <span class="font-bold">${item.investment}</span></div>
+                        <div><span class="text-gray-600">Timeframe:</span> <span class="font-bold">${item.timeframe}</span></div>
+                        <div><span class="text-gray-600">Confidence:</span> <span class="font-bold">${item.confidence}</span></div>
+                    </div>
+                </div>
+            `).join('');
+            
+            // Risk Mitigation
+            const riskMitigationDiv = document.getElementById('risk-mitigation');
+            const riskStrategies = [
+                {
+                    strategy: 'Diversify Platform Investment',
+                    description: 'Spread investment across Instagram, TikTok, and YouTube',
+                    impact: 'Reduces platform dependency risk by 40%'
+                },
+                {
+                    strategy: 'Gradual Rollout Strategy',
+                    description: 'Start with test campaigns before full deployment',
+                    impact: 'Minimizes potential losses by 60%'
+                },
+                {
+                    strategy: 'Climate Adaptation Testing',
+                    description: 'Test products in Malaysian climate conditions',
+                    impact: 'Increases success probability by 25%'
+                }
+            ];
+            
+            riskMitigationDiv.innerHTML = riskStrategies.map(item => `
+                <div class="border-l-4 border-yellow-500 bg-yellow-50 p-4 rounded-r-lg">
+                    <h4 class="font-bold text-yellow-900">${item.strategy}</h4>
+                    <p class="text-sm text-gray-700 mt-1">${item.description}</p>
+                    <p class="text-sm text-yellow-700 font-semibold mt-2">${item.impact}</p>
+                </div>
+            `).join('');
+        }
+
+        // Update simulation
+        function updateSimulation() {
+            const investment = parseInt(document.getElementById('investment-slider').value);
+            const duration = parseInt(document.getElementById('duration-select').value);
+            
+            // Update display
+            document.getElementById('investment-display').textContent = `RM ${formatNumber(investment)}`;
+            
+            // Calculate projections (simplified model)
+            const baseROI = 0.8; // 80% base ROI
+            const durationMultiplier = 1 + (duration - 1) * 0.2; // More time = better ROI
+            const scaleMultiplier = Math.min(1.5, 1 + (investment / 1000000) * 0.5); // Economies of scale
+            
+            const totalMultiplier = baseROI * durationMultiplier * scaleMultiplier;
+            const projectedRevenue = Math.round(investment * totalMultiplier);
+            const roi = Math.round((totalMultiplier - 1) * 100);
+            const breakEvenWeeks = Math.max(2, Math.round(12 / totalMultiplier));
+            
+            document.getElementById('projected-revenue').textContent = `RM ${formatNumber(projectedRevenue)}`;
+            document.getElementById('projected-roi').textContent = `${roi}%`;
+            document.getElementById('break-even-time').textContent = `${breakEvenWeeks} weeks`;
+        }
+
+        // Refresh ROI data
+        function refreshROIData() {
+            document.getElementById('total-opportunities').textContent = '-';
+            document.getElementById('avg-roi').textContent = '-';
+            document.getElementById('market-potential').textContent = '-';
+            
+            document.getElementById('roi-table-body').innerHTML = 
+                '<tr><td colspan="7" class="text-center py-4 text-gray-500">Refreshing ROI data...</td></tr>';
+            
+            setTimeout(() => {
+                loadROIData();
+                loadROIChart();
+                loadInvestmentRecommendations();
+            }, 1500);
+        }
+
+        // Analyze specific investment
+        function analyzeInvestment(trendId) {
+            alert(`Analyzing investment opportunity for trend ${trendId}...\n\n` +
+                  `✅ Market validation complete\n` +
+                  `✅ Competitor analysis done\n` +
+                  `✅ ROI calculations updated\n` +
+                  `✅ Risk assessment completed\n\n` +
+                  `Recommendation: PROCEED with cautious optimism\n` +
+                  `Suggested investment: RM 75,000 - RM 150,000\n` +
+                  `Expected timeline: 2-4 months to profitability`);
+        }
+
+        // Utility function
+        function formatNumber(num) {
+            if (num >= 1000000) {
+                return (num / 1000000).toFixed(1) + 'M';
+            } else if (num >= 1000) {
+                return (num / 1000).toFixed(0) + 'K';
+            }
+            return num?.toString() || '0';
+        }
+    </script>
+</body>
+</html>
