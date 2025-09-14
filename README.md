@@ -1,5 +1,8 @@
 # TrendZ – L'Oréal Datathon Prototype
 
+## DATASET
+https://drive.google.com/drive/folders/1xeRqCEjY-YDfIpdK1VmBhg2-gFH3g24K?usp=sharing
+
 ## 🎯 Overview
 This project is an AI-powered prototype to **identify and forecast emerging beauty trends in Malaysia** across social media.  
 It enables L'Oréal Malaysia to:
@@ -141,5 +144,6 @@ python app_backend.py
   - Macro F1 = **0.607** ✅
 - **Real-time Processing**: <1 second API response
 - **Dataset**: 92,759 videos processed
+
 
 **TrendZ is production-ready for L'Oréal's datathon!** 🚀✨
