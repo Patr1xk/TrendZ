@@ -39,6 +39,71 @@ trends_data = None
 summary_data = None
 chart_data = None
 alerts_data = []
+user_watchlist = []  # Store user's watchlist items
+
+# Lazy loading flags
+models_trained = False
+api_data_loaded = False
+
+def load_watchlist_data():
+    """Load watchlist data from file"""
+    global user_watchlist
+    try:
+        if os.path.exists('watchlist.json'):
+            with open('watchlist.json', 'r') as f:
+                user_watchlist = json.load(f)
+            print(f"✅ Loaded {len(user_watchlist)} items from watchlist")
+        else:
+            user_watchlist = []
+            print("📝 No existing watchlist found, starting fresh")
+    except Exception as e:
+        print(f"⚠️ Error loading watchlist: {e}")
+        user_watchlist = []
+
+def save_watchlist_data():
+    """Save watchlist data to file"""
+    global user_watchlist
+    try:
+        with open('watchlist.json', 'w') as f:
+            json.dump(user_watchlist, f, indent=2)
+        print(f"💾 Saved {len(user_watchlist)} items to watchlist")
+    except Exception as e:
+        print(f"⚠️ Error saving watchlist: {e}")
+
+def lazy_load_models():
+    """Train ML models only when needed"""
+    global models_trained
+    if not models_trained:
+        print("🔄 Training ML models on first request...")
+        try:
+            videos_df = pd.read_csv('dataset/videos.csv')
+            videos_df['total_engagement'] = videos_df['likeCount'] + videos_df['favouriteCount'] + videos_df['commentCount']
+            videos_df['engagement_rate'] = videos_df['total_engagement'] / videos_df['viewCount'].replace(0, 1)
+            videos_df['engagement_rate'] = videos_df['engagement_rate'].fillna(0)
+            
+            roi_ml_engine.train_models(videos_df)
+            early_detection_engine.train_models(videos_df)
+            models_trained = True
+            print("✅ ML models trained successfully")
+        except Exception as e:
+            print(f"⚠️ Error training models: {e}")
+
+def lazy_load_api_data():
+    """Fetch API data only when needed"""
+    global api_data_loaded, trends_data
+    if not api_data_loaded:
+        print("🌐 Fetching real API data on first request...")
+        try:
+            real_trending_hashtags = real_api_integration.fetch_real_trending_hashtags()
+            competitor_data = real_api_integration.fetch_real_competitor_data()
+            market_data = real_api_integration.fetch_real_market_data()
+            
+            videos_df = pd.read_csv('dataset/videos.csv')
+            trends_data = generate_real_trends_data(videos_df, real_trending_hashtags, competitor_data, market_data)
+            api_data_loaded = True
+            print("✅ Real API data loaded successfully")
+        except Exception as e:
+            print(f"⚠️ Error loading API data: {e}")
 
 def load_data_from_notebooks():
     """Load processed data from notebooks"""
@@ -87,20 +152,19 @@ def load_data_from_notebooks():
         videos_df['engagement_rate'] = videos_df['total_engagement'] / videos_df['viewCount'].replace(0, 1)
         videos_df['engagement_rate'] = videos_df['engagement_rate'].fillna(0)
         
-        # Train high-accuracy ROI models
-        roi_ml_engine.train_models(videos_df)
+        # 🚀 SKIP HEAVY ML TRAINING ON STARTUP - DO LAZY LOADING INSTEAD
+        print("⚡ Skipping ML training for fast startup - will train on first API call")
+        # roi_ml_engine.train_models(videos_df)  # Commented out for fast startup
+        # early_detection_engine.train_models(videos_df)  # Commented out for fast startup
         
-        # Train early detection models
-        early_detection_engine.train_models(videos_df)
+        # 🚀 SKIP SLOW API CALLS ON STARTUP - DO LAZY LOADING INSTEAD
+        print("⚡ Skipping API calls for fast startup - will fetch on first request")
+        # real_trending_hashtags = real_api_integration.fetch_real_trending_hashtags()
+        # competitor_data = real_api_integration.fetch_real_competitor_data()
+        # market_data = real_api_integration.fetch_real_market_data()
         
-        # Fetch REAL trending data from live APIs
-        print("🌐 Fetching REAL trending data from live APIs...")
-        real_trending_hashtags = real_api_integration.fetch_real_trending_hashtags()
-        competitor_data = real_api_integration.fetch_real_competitor_data()
-        market_data = real_api_integration.fetch_real_market_data()
-        
-        # Generate trends data with real data
-        trends_data = generate_real_trends_data(videos_df, real_trending_hashtags, competitor_data, market_data)
+        # Generate trends data with mock data for fast startup
+        trends_data = generate_mock_trends_data()
         
         # Generate summary data
         summary_data = generate_mock_summary_data()
@@ -287,6 +351,21 @@ def dashboard():
     """Main dashboard page"""
     return render_template('dashboard.html')
 
+@app.route('/hashtag-products')
+def hashtag_products():
+    """Hashtag product mapping page"""
+    return render_template('hashtag-products.html')
+
+@app.route('/influencer-collaboration')
+def influencer_collaboration():
+    """Malaysian influencer collaboration page"""
+    return render_template('influencer-collaboration.html')
+
+@app.route('/watchlist')
+def watchlist():
+    """Watchlist page"""
+    return render_template('watchlist.html')
+
 @app.route('/trend-detail/<trend_id>')
 def trend_detail(trend_id):
     """Trend detail page"""
@@ -313,6 +392,9 @@ def api_summary():
 @app.route('/api/trends')
 def api_trends():
     """Get trends data with filtering"""
+    # Lazy load real API data if not loaded yet
+    lazy_load_api_data()
+    
     global trends_data
     
     if not trends_data:
@@ -390,6 +472,35 @@ def api_malaysia_product_mapping():
         return jsonify({
             'status': 'error',
             'message': f'Product mapping failed: {str(e)}'
+        }), 500
+
+@app.route('/api/malaysia/hashtag-products/<hashtag>', methods=['GET'])
+def api_malaysia_hashtag_products(hashtag):
+    """Get specific product recommendations for a trending hashtag"""
+    try:
+        # Clean the hashtag parameter
+        clean_hashtag = hashtag.replace('#', '').replace('%23', '')
+        
+        # Get hashtag-specific product recommendations
+        recommendations = malaysia_product_engine.get_hashtag_product_recommendations(clean_hashtag)
+        
+        return jsonify({
+            'status': 'success',
+            'hashtag': f'#{clean_hashtag}',
+            'recommendations': recommendations,
+            'timestamp': datetime.now().isoformat(),
+            'malaysia_context': {
+                'climate_suitable': all(product['humidity_suitable'] for product in recommendations['recommended_products']),
+                'local_availability': 'High' if all(product['availability'] == 'Very High' for product in recommendations['recommended_products']) else 'Good',
+                'cultural_relevance': recommendations['malaysia_relevance']
+            }
+        })
+        
+    except Exception as e:
+        return jsonify({
+            'status': 'error',
+            'message': f'Hashtag product mapping failed: {str(e)}',
+            'hashtag': hashtag
         }), 500
 
 @app.route('/api/malaysia/chatbot', methods=['POST'])
@@ -500,6 +611,52 @@ def api_malaysia_smart_questions(trend_id):
             'message': f'Smart questions failed: {str(e)}'
         }), 500
 
+@app.route('/api/malaysia/influencers', methods=['GET'])
+def api_malaysia_influencers():
+    """Get Malaysian influencer data for collaboration"""
+    try:
+        # Load influencer data from CSV
+        influencers_df = pd.read_csv('dataset/malaysian_influencers.csv')
+        
+        # Convert to list of dictionaries
+        influencers = []
+        for _, row in influencers_df.iterrows():
+            influencer = {
+                'id': int(row['id']),
+                'name': row['name'],
+                'platform': row['platform'],
+                'username': row['username'],
+                'followers': int(row['followers']),
+                'engagement_rate': float(row['engagement_rate']),
+                'category': row['category'],
+                'specialization': row['specialization'],
+                'location': row['location'],
+                'language': row['language'],
+                'contact_email': row['contact_email'],
+                'instagram_url': row['instagram_url'],
+                'tiktok_url': row['tiktok_url'],
+                'youtube_url': row['youtube_url'],
+                'price_range': row['price_range'],
+                'availability': row['availability'],
+                'rating': float(row['rating']),
+                'bio': row['bio'],
+                'profile_image': row['profile_image']
+            }
+            influencers.append(influencer)
+        
+        return jsonify({
+            'status': 'success',
+            'influencers': influencers,
+            'total_count': len(influencers),
+            'message': 'Malaysian influencers loaded successfully'
+        })
+        
+    except Exception as e:
+        return jsonify({
+            'status': 'error',
+            'message': f'Failed to load influencers: {str(e)}'
+        }), 500
+
 # Analysis API endpoints
 @app.route('/api/ai-trend-forecasting', methods=['GET'])
 def api_ai_trend_forecasting():
@@ -599,26 +756,123 @@ def api_content_creation():
 
 @app.route('/api/watchlist', methods=['GET'])
 def api_watchlist():
-    """Watchlist and alerts"""
+    """Get user's watchlist with alerts"""
     try:
-        global trends_data
-        if not trends_data:
-            return jsonify({'alerts': []})
+        global user_watchlist, trends_data
         
-        alerts = []
-        for trend in trends_data[:5]:
-            if trend.get('trend_score', 0) > 80:
-                alerts.append({
+        # Generate alerts for watched trends
+        watchlist_with_alerts = []
+        for item in user_watchlist:
+            # Find the trend data
+            trend = next((t for t in trends_data if t['id'] == item['trend_id']), None)
+            if trend:
+                # Determine urgency based on trend score and lifecycle
+                urgency = 'LOW'
+                message = f"{trend['name']} is being monitored"
+                
+                if trend.get('trend_score', 0) > 85:
+                    urgency = 'HIGH'
+                    message = f"🚨 {trend['name']} is trending strongly with {trend['trend_score']} score!"
+                elif trend.get('trend_score', 0) > 70:
+                    urgency = 'MEDIUM'
+                    message = f"📈 {trend['name']} is gaining momentum with {trend['trend_score']} score"
+                elif trend.get('lifecycle') == 'Decay':
+                    urgency = 'MEDIUM'
+                    message = f"⚠️ {trend['name']} is in decay phase - consider action"
+                
+                watchlist_item = {
+                    'id': item['id'],
+                    'trend_id': item['trend_id'],
                     'trend_name': trend['name'],
-                    'trend_id': trend['id'],
-                    'urgency': 'HIGH',
-                    'message': f"{trend['name']} is trending with {trend['trend_score']} score!",
+                    'platform': trend.get('platform', 'Unknown'),
+                    'lifecycle': trend.get('lifecycle', 'Unknown'),
+                    'trend_score': trend.get('trend_score', 0),
+                    'roi_score': trend.get('roi_score', 0),
+                    'urgency': urgency,
+                    'message': message,
+                    'added_date': item['added_date'],
                     'timestamp': datetime.now().isoformat()
-                })
+                }
+                watchlist_with_alerts.append(watchlist_item)
         
-        return jsonify({'alerts': alerts})
+        return jsonify({
+            'status': 'success',
+            'watchlist': watchlist_with_alerts,
+            'total_count': len(watchlist_with_alerts)
+        })
+        
     except Exception as e:
-        return jsonify({'status': 'error', 'message': f'Watchlist failed: {str(e)}'        }), 500
+        return jsonify({'status': 'error', 'message': f'Watchlist failed: {str(e)}'}), 500
+
+@app.route('/api/watchlist/add', methods=['POST'])
+def api_watchlist_add():
+    """Add trend to watchlist"""
+    try:
+        global user_watchlist, trends_data
+        
+        data = request.get_json()
+        trend_id = data.get('trend_id')
+        trend_name = data.get('trend_name')
+        
+        if not trend_id:
+            return jsonify({'status': 'error', 'message': 'Trend ID is required'}), 400
+        
+        # Check if already in watchlist
+        if any(item['trend_id'] == trend_id for item in user_watchlist):
+            return jsonify({'status': 'error', 'message': 'Trend is already in your watchlist'}), 400
+        
+        # Find the trend data
+        trend = next((t for t in trends_data if t['id'] == trend_id), None)
+        if not trend:
+            return jsonify({'status': 'error', 'message': 'Trend not found'}), 404
+        
+        # Add to watchlist
+        watchlist_item = {
+            'id': len(user_watchlist) + 1,
+            'trend_id': trend_id,
+            'trend_name': trend_name or trend['name'],
+            'added_date': datetime.now().isoformat()
+        }
+        user_watchlist.append(watchlist_item)
+        save_watchlist_data()  # Save to file
+        
+        return jsonify({
+            'status': 'success',
+            'message': f'Added "{trend_name or trend["name"]}" to watchlist',
+            'watchlist_item': watchlist_item
+        })
+        
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': f'Failed to add to watchlist: {str(e)}'}), 500
+
+@app.route('/api/watchlist/remove', methods=['POST'])
+def api_watchlist_remove():
+    """Remove trend from watchlist"""
+    try:
+        global user_watchlist
+        
+        data = request.get_json()
+        trend_id = data.get('trend_id')
+        
+        if not trend_id:
+            return jsonify({'status': 'error', 'message': 'Trend ID is required'}), 400
+        
+        # Find and remove the item
+        original_length = len(user_watchlist)
+        user_watchlist = [item for item in user_watchlist if item['trend_id'] != trend_id]
+        
+        if len(user_watchlist) == original_length:
+            return jsonify({'status': 'error', 'message': 'Trend not found in watchlist'}), 404
+        
+        save_watchlist_data()  # Save to file
+        
+        return jsonify({
+            'status': 'success',
+            'message': 'Trend removed from watchlist successfully'
+        })
+        
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': f'Failed to remove from watchlist: {str(e)}'}), 500
 
 @app.route('/api/ingredient-popularity', methods=['GET'])
 def api_ingredient_popularity():
@@ -660,10 +914,34 @@ def api_visual_trend_recognition():
     except Exception as e:
         return jsonify({'status': 'error', 'message': f'Visual trend recognition failed: {str(e)}'}), 500
 
+@app.route('/api/trigger-full-setup', methods=['GET'])
+def api_trigger_full_setup():
+    """Trigger full ML training and real data loading"""
+    try:
+        print("🚀 Triggering full ML setup...")
+        
+        # Load ML models
+        lazy_load_models()
+        
+        # Load real API data
+        lazy_load_api_data()
+        
+        return jsonify({
+            'status': 'success',
+            'message': 'Full ML setup completed!',
+            'models_trained': models_trained,
+            'api_data_loaded': api_data_loaded
+        })
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': f'Setup failed: {str(e)}'}), 500
+
 @app.route('/api/roi-prediction', methods=['GET'])
 def api_roi_prediction():
     """ROI prediction analysis"""
     try:
+        # Lazy load models if not trained yet
+        lazy_load_models()
+        
         global trends_data
         if not trends_data:
             return jsonify({'status': 'error', 'message': 'No trends data available'})
@@ -857,6 +1135,7 @@ if __name__ == '__main__':
     
     # Load data on startup
     load_data_from_notebooks()
+    load_watchlist_data()  # Load watchlist data
     
     print("✅ Backend ready!")
     print("🌐 Dashboard available at: http://localhost:5000")

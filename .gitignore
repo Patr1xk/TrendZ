@@ -7,6 +7,9 @@
 # Exclude large dataset files (too big for GitHub)
 dataset/
 *.csv
+# But allow our generated datasets
+!dataset/malaysia_beauty_trends_dataset.csv
+!dataset/malaysian_influencers.csv
 *.json
 *.parquet
 *.h5
@@ -336,6 +339,9 @@ test_credentials.py
 generated_data/
 processed_data/
 raw_data/
+
+# User data files
+watchlist.json
 
 # ===========================================
 # DOCUMENTATION BUILD FILES

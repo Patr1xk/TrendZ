@@ -23,7 +23,9 @@ class MalaysiaProductEngine:
                     'skin_concerns': ['Fine lines', 'Dullness', 'Uneven texture'],
                     'suitable_for': ['Normal', 'Combination', 'Oily'],
                     'humidity_friendly': True,
-                    'local_availability': 'High'
+                    'local_availability': 'High',
+                    'image_url': '/static/images/revitalift.jpg',
+                    'description': 'Advanced anti-aging essence with micro-crystals for radiant skin'
                 },
                 'white_perfect': {
                     'name': 'White Perfect Clinical Day Cream',
@@ -33,7 +35,9 @@ class MalaysiaProductEngine:
                     'skin_concerns': ['Dark spots', 'Uneven tone', 'UV protection'],
                     'suitable_for': ['All skin types'],
                     'humidity_friendly': True,
-                    'local_availability': 'High'
+                    'local_availability': 'High',
+                    'image_url': '/static/images/white_perfect.jpg',
+                    'description': 'Clinical-grade brightening cream for even skin tone'
                 },
                 'hydrafresh': {
                     'name': 'Hydrafresh Aqua Essence',
@@ -43,7 +47,9 @@ class MalaysiaProductEngine:
                     'skin_concerns': ['Dehydration', 'AC dryness', 'Tightness'],
                     'suitable_for': ['Dry', 'Normal', 'Sensitive'],
                     'humidity_friendly': True,
-                    'local_availability': 'Very High'
+                    'local_availability': 'Very High',
+                    'image_url': '/static/images/hydrafresh.jpg',
+                    'description': 'Intensive hydration essence for tropical climate'
                 }
             },
             'makeup': {
@@ -55,7 +61,9 @@ class MalaysiaProductEngine:
                     'skin_concerns': ['Color matching', 'Natural finish'],
                     'suitable_for': ['All skin types'],
                     'humidity_friendly': True,
-                    'local_availability': 'Very High'
+                    'local_availability': 'Very High',
+                    'image_url': '/static/images/true_match.jpg',
+                    'description': 'Perfect color match foundation for Asian skin tones'
                 },
                 'infallible': {
                     'name': 'Infallible 24HR Fresh Wear',
@@ -65,7 +73,9 @@ class MalaysiaProductEngine:
                     'skin_concerns': ['Oiliness', 'Humidity', 'Longevity'],
                     'suitable_for': ['Oily', 'Combination'],
                     'humidity_friendly': True,
-                    'local_availability': 'High'
+                    'local_availability': 'High',
+                    'image_url': '/static/images/infallible.jpg',
+                    'description': '24-hour fresh wear foundation for tropical climate'
                 },
                 'color_riche': {
                     'name': 'Color Riche Matte Lipstick',
@@ -74,7 +84,31 @@ class MalaysiaProductEngine:
                     'key_features': ['Matte finish', 'Rich pigment', 'Comfortable'],
                     'suitable_for': ['All skin tones'],
                     'humidity_friendly': True,
-                    'local_availability': 'Very High'
+                    'local_availability': 'Very High',
+                    'image_url': '/static/images/color_riche.jpg',
+                    'description': 'Rich matte lipstick with comfortable long-wear formula'
+                },
+                'lash_paradise': {
+                    'name': 'Lash Paradise Mascara',
+                    'category': 'Mascara',
+                    'price_range': 'RM 35-49',
+                    'key_features': ['Volume', 'Length', 'No clumping'],
+                    'suitable_for': ['All eye types'],
+                    'humidity_friendly': True,
+                    'local_availability': 'Very High',
+                    'image_url': '/static/images/lash_paradise.jpg',
+                    'description': 'Paradise-worthy lashes with volume and length'
+                },
+                'infallible_eyeshadow': {
+                    'name': 'Infallible 24HR Eyeshadow',
+                    'category': 'Eyeshadow',
+                    'price_range': 'RM 25-35',
+                    'key_features': ['24HR wear', 'Cream-powder formula', 'No creasing'],
+                    'suitable_for': ['All eye types'],
+                    'humidity_friendly': True,
+                    'local_availability': 'High',
+                    'image_url': '/static/images/infallible_eyeshadow.jpg',
+                    'description': 'Long-wear eyeshadow that stays put in humidity'
                 }
             },
             'hair': {
@@ -86,8 +120,192 @@ class MalaysiaProductEngine:
                     'hair_concerns': ['Dryness', 'Damage', 'Frizz'],
                     'suitable_for': ['All hair types'],
                     'humidity_friendly': True,
-                    'local_availability': 'Very High'
+                    'local_availability': 'Very High',
+                    'image_url': '/static/images/elvive_oil.jpg',
+                    'description': 'Extraordinary hair oil with 6 precious oils'
                 }
+            }
+        }
+        
+        # Hashtag-to-Product Mapping Database
+        self.hashtag_product_mapping = {
+            # Barbie-themed trends
+            'barbiemakeup': {
+                'primary_products': ['color_riche', 'lash_paradise', 'infallible_eyeshadow'],
+                'trend_description': 'Pink, glamorous, and playful makeup looks inspired by Barbie',
+                'color_palette': ['Hot Pink', 'Bubblegum Pink', 'Rose Gold', 'Bright Coral'],
+                'look_style': 'Glamorous, playful, and feminine',
+                'target_audience': 'Gen Z, Millennials, Beauty enthusiasts',
+                'application_tips': [
+                    'Use bright pink lipstick for statement lips',
+                    'Apply rose gold eyeshadow for glamorous eyes',
+                    'Finish with volumizing mascara for doll-like lashes',
+                    'Add subtle pink blush for healthy glow'
+                ],
+                'marketing_angles': [
+                    'Perfect for Barbie movie premiere',
+                    'Instagram-worthy pink aesthetic',
+                    'Fun and playful summer look',
+                    'Celebrity-inspired glamour'
+                ]
+            },
+            'barbiecore': {
+                'primary_products': ['color_riche', 'lash_paradise', 'infallible'],
+                'trend_description': 'Ultra-feminine pink aesthetic with bold, playful elements',
+                'color_palette': ['Barbie Pink', 'Hot Pink', 'Rose Gold', 'Coral'],
+                'look_style': 'Bold, feminine, and Instagram-ready',
+                'target_audience': 'Social media influencers, Gen Z, Fashion-forward',
+                'application_tips': [
+                    'Bold pink lips are essential',
+                    'Glowing skin with pink undertones',
+                    'Dramatic lashes for doll effect',
+                    'Pink accessories to complete the look'
+                ],
+                'marketing_angles': [
+                    'Movie tie-in opportunity',
+                    'Social media viral potential',
+                    'Celebrity endorsement ready',
+                    'Limited edition packaging opportunity'
+                ]
+            },
+            'barbiepink': {
+                'primary_products': ['color_riche', 'infallible_eyeshadow'],
+                'trend_description': 'Signature Barbie pink color in makeup and fashion',
+                'color_palette': ['Signature Barbie Pink', 'Hot Pink', 'Bubblegum'],
+                'look_style': 'Classic, iconic, and instantly recognizable',
+                'target_audience': 'All ages, Barbie fans, Pink lovers',
+                'application_tips': [
+                    'Signature pink lipstick is key',
+                    'Pink eyeshadow for monochromatic look',
+                    'Keep skin glowing and fresh',
+                    'Minimal but impactful application'
+                ],
+                'marketing_angles': [
+                    'Iconic color recognition',
+                    'Cross-generational appeal',
+                    'Nostalgia factor',
+                    'Brand partnership opportunity'
+                ]
+            },
+            
+            # Natural beauty trends
+            'naturalmakeup': {
+                'primary_products': ['true_match', 'hydrafresh', 'white_perfect'],
+                'trend_description': 'Clean, minimal makeup that enhances natural beauty',
+                'color_palette': ['Nude', 'Beige', 'Soft Brown', 'Natural Pink'],
+                'look_style': 'Fresh, clean, and effortless',
+                'target_audience': 'Working professionals, Minimalists, Natural beauty lovers',
+                'application_tips': [
+                    'Light foundation for even skin tone',
+                    'Subtle lip color for natural look',
+                    'Minimal eye makeup',
+                    'Focus on skincare for glow'
+                ],
+                'marketing_angles': [
+                    'Perfect for Malaysian climate',
+                    'Work-appropriate styling',
+                    'Skincare-first approach',
+                    'Long-lasting in humidity'
+                ]
+            },
+            'cleangirl': {
+                'primary_products': ['hydrafresh', 'white_perfect', 'true_match'],
+                'trend_description': 'Skincare-focused approach with minimal makeup',
+                'color_palette': ['Nude', 'Clear', 'Soft Pink', 'Natural'],
+                'look_style': 'Fresh, healthy, and glowing',
+                'target_audience': 'Skincare enthusiasts, Health-conscious, Young adults',
+                'application_tips': [
+                    'Prioritize skincare routine',
+                    'Use lightweight foundation',
+                    'Natural lip balm or gloss',
+                    'Focus on skin health'
+                ],
+                'marketing_angles': [
+                    'Skincare-makeup hybrid',
+                    'Healthy lifestyle alignment',
+                    'Malaysian humidity-friendly',
+                    'Sustainable beauty approach'
+                ]
+            },
+            
+            # Glamour trends
+            'glammakeup': {
+                'primary_products': ['infallible', 'lash_paradise', 'infallible_eyeshadow', 'color_riche'],
+                'trend_description': 'Full glamour makeup for special occasions',
+                'color_palette': ['Gold', 'Bronze', 'Deep Red', 'Black'],
+                'look_style': 'Dramatic, sophisticated, and elegant',
+                'target_audience': 'Special occasions, Events, Glamour lovers',
+                'application_tips': [
+                    'Full coverage foundation',
+                    'Dramatic eye makeup',
+                    'Bold lip color',
+                    'Contouring and highlighting'
+                ],
+                'marketing_angles': [
+                    'Special occasion ready',
+                    'Malaysian wedding season',
+                    'Festival celebrations',
+                    'Professional makeup artist approved'
+                ]
+            },
+            'partyready': {
+                'primary_products': ['infallible', 'lash_paradise', 'color_riche'],
+                'trend_description': 'Long-wear makeup perfect for parties and events',
+                'color_palette': ['Bold', 'Vibrant', 'Metallic', 'Shimmer'],
+                'look_style': 'Fun, vibrant, and party-appropriate',
+                'target_audience': 'Party-goers, Event attendees, Social butterflies',
+                'application_tips': [
+                    'Long-wear foundation essential',
+                    'Waterproof mascara for dancing',
+                    'Bold lip color that lasts',
+                    'Setting spray for all-night wear'
+                ],
+                'marketing_angles': [
+                    'All-night wear guarantee',
+                    'Malaysian party scene',
+                    'Social media ready',
+                    'Celebration season perfect'
+                ]
+            },
+            
+            # Skincare trends
+            'glassskin': {
+                'primary_products': ['hydrafresh', 'white_perfect', 'revitalift'],
+                'trend_description': 'Korean-inspired dewy, translucent skin',
+                'color_palette': ['Clear', 'Dewy', 'Translucent', 'Glowing'],
+                'look_style': 'Radiant, dewy, and luminous',
+                'target_audience': 'K-beauty fans, Skincare enthusiasts, Young adults',
+                'application_tips': [
+                    'Intensive hydration routine',
+                    'Brightening treatments',
+                    'Minimal makeup to show skin',
+                    'Dewy finish products'
+                ],
+                'marketing_angles': [
+                    'K-beauty trend alignment',
+                    'Malaysian humidity benefits',
+                    'Social media viral potential',
+                    'Skincare-makeup integration'
+                ]
+            },
+            'skincare': {
+                'primary_products': ['hydrafresh', 'white_perfect', 'revitalift'],
+                'trend_description': 'Focus on healthy, well-cared-for skin',
+                'color_palette': ['Natural', 'Healthy', 'Glowing'],
+                'look_style': 'Healthy, natural, and well-maintained',
+                'target_audience': 'Skincare conscious, Health-focused, All ages',
+                'application_tips': [
+                    'Consistent skincare routine',
+                    'Sun protection daily',
+                    'Hydration is key',
+                    'Gentle cleansing'
+                ],
+                'marketing_angles': [
+                    'Health and wellness alignment',
+                    'Malaysian climate adaptation',
+                    'Preventive skincare approach',
+                    'Long-term skin health'
+                ]
             }
         }
         
@@ -119,6 +337,51 @@ class MalaysiaProductEngine:
                 'product_opportunities': ['Mattifying products', 'SPF makeup', 'Cooling treatments']
             }
         }
+    
+    def get_hashtag_product_recommendations(self, hashtag):
+        """Get specific product recommendations for a trending hashtag"""
+        
+        hashtag_clean = hashtag.lower().replace('#', '').replace(' ', '')
+        
+        # Check if we have specific mapping for this hashtag
+        if hashtag_clean in self.hashtag_product_mapping:
+            mapping_data = self.hashtag_product_mapping[hashtag_clean]
+            
+            # Get detailed product information
+            recommended_products = []
+            for product_id in mapping_data['primary_products']:
+                product_info = self._find_product_by_id(product_id)
+                if product_info:
+                    product_detail = {
+                        'product_id': product_id,
+                        'product_name': product_info['name'],
+                        'category': product_info.get('category', 'Unknown'),
+                        'price_range': product_info['price_range'],
+                        'description': product_info['description'],
+                        'image_url': product_info.get('image_url', '/static/images/default.jpg'),
+                        'availability': product_info['local_availability'],
+                        'humidity_suitable': product_info['humidity_friendly'],
+                        'match_reason': self._get_hashtag_match_reason(product_id, hashtag_clean),
+                        'application_tip': self._get_product_application_tip(product_id, hashtag_clean)
+                    }
+                    recommended_products.append(product_detail)
+            
+            return {
+                'hashtag': hashtag,
+                'trend_description': mapping_data['trend_description'],
+                'color_palette': mapping_data['color_palette'],
+                'look_style': mapping_data['look_style'],
+                'target_audience': mapping_data['target_audience'],
+                'recommended_products': recommended_products,
+                'application_tips': mapping_data['application_tips'],
+                'marketing_angles': mapping_data['marketing_angles'],
+                'total_products': len(recommended_products),
+                'estimated_cost': self._calculate_total_cost(recommended_products),
+                'malaysia_relevance': self._assess_malaysia_relevance(hashtag_clean)
+            }
+        else:
+            # Fallback to general trend mapping
+            return self._get_general_hashtag_recommendations(hashtag)
     
     def map_trend_to_products(self, trend_data):
         """Map a beauty trend to relevant L'Oréal Malaysia products"""
@@ -408,6 +671,190 @@ class MalaysiaProductEngine:
         }
         
         return considerations.get(event, 'Standard pricing strategy')
+    
+    def _find_product_by_id(self, product_id):
+        """Find product information by ID across all categories"""
+        
+        for category, products in self.loreal_products.items():
+            if product_id in products:
+                product_info = products[product_id].copy()
+                product_info['category'] = category
+                return product_info
+        return None
+    
+    def _get_hashtag_match_reason(self, product_id, hashtag):
+        """Get reason why product matches the hashtag"""
+        
+        match_reasons = {
+            'color_riche': {
+                'barbiemakeup': 'Perfect pink lipstick for Barbie-inspired looks',
+                'barbiecore': 'Essential pink lipstick for Barbiecore aesthetic',
+                'barbiepink': 'Signature pink color matches Barbie pink',
+                'glammakeup': 'Rich pigment perfect for glamorous looks',
+                'partyready': 'Long-wear formula ideal for parties'
+            },
+            'lash_paradise': {
+                'barbiemakeup': 'Volumizing mascara creates doll-like lashes',
+                'barbiecore': 'Dramatic lashes essential for Barbiecore look',
+                'glammakeup': 'Volume and length for full glamour',
+                'partyready': 'Long-lasting mascara for all-night wear'
+            },
+            'infallible_eyeshadow': {
+                'barbiemakeup': 'Rose gold eyeshadow perfect for Barbie eyes',
+                'barbiecore': 'Pink eyeshadow essential for Barbiecore',
+                'glammakeup': 'Long-wear eyeshadow for dramatic looks',
+                'partyready': '24HR wear perfect for parties'
+            },
+            'infallible': {
+                'barbiecore': 'Long-wear foundation for all-day Barbie look',
+                'glammakeup': 'Full coverage foundation for glamour',
+                'partyready': '24HR wear foundation for parties'
+            },
+            'true_match': {
+                'naturalmakeup': 'Natural finish foundation for clean look',
+                'cleangirl': 'Lightweight foundation for skincare-focused look'
+            },
+            'hydrafresh': {
+                'naturalmakeup': 'Hydrating essence for natural glow',
+                'cleangirl': 'Skincare-first approach with hydration',
+                'glassskin': 'Intensive hydration for dewy skin'
+            },
+            'white_perfect': {
+                'naturalmakeup': 'Brightening cream for natural glow',
+                'cleangirl': 'Skincare-focused brightening',
+                'glassskin': 'Brightening treatment for glass skin'
+            },
+            'revitalift': {
+                'glassskin': 'Anti-aging essence for radiant skin',
+                'skincare': 'Advanced anti-aging for healthy skin'
+            }
+        }
+        
+        return match_reasons.get(product_id, {}).get(hashtag, 'Perfect match for this trend')
+    
+    def _get_product_application_tip(self, product_id, hashtag):
+        """Get specific application tip for product-hashtag combination"""
+        
+        application_tips = {
+            'color_riche': {
+                'barbiemakeup': 'Apply bold pink lipstick and blot for long-wear',
+                'barbiecore': 'Use as statement lip for Instagram-worthy look',
+                'glammakeup': 'Layer for intense color payoff',
+                'partyready': 'Apply and set with powder for all-night wear'
+            },
+            'lash_paradise': {
+                'barbiemakeup': 'Apply multiple coats for doll-like volume',
+                'barbiecore': 'Build up volume for dramatic effect',
+                'glammakeup': 'Use for both upper and lower lashes',
+                'partyready': 'Apply waterproof version for dancing'
+            },
+            'infallible_eyeshadow': {
+                'barbiemakeup': 'Apply rose gold shade for Barbie eyes',
+                'barbiecore': 'Use pink shades for monochromatic look',
+                'glammakeup': 'Layer colors for dramatic effect',
+                'partyready': 'Apply primer first for 24HR wear'
+            },
+            'infallible': {
+                'barbiecore': 'Apply with sponge for flawless finish',
+                'glammakeup': 'Use full coverage for special occasions',
+                'partyready': 'Set with powder for humidity resistance'
+            },
+            'true_match': {
+                'naturalmakeup': 'Apply lightly for natural finish',
+                'cleangirl': 'Use fingers for skin-like application'
+            },
+            'hydrafresh': {
+                'naturalmakeup': 'Apply before makeup for natural glow',
+                'cleangirl': 'Use morning and night for hydration',
+                'glassskin': 'Layer multiple times for dewy effect'
+            },
+            'white_perfect': {
+                'naturalmakeup': 'Apply daily for even skin tone',
+                'cleangirl': 'Use as part of skincare routine',
+                'glassskin': 'Apply before makeup for brightening'
+            },
+            'revitalift': {
+                'glassskin': 'Apply before moisturizer for anti-aging',
+                'skincare': 'Use consistently for best results'
+            }
+        }
+        
+        return application_tips.get(product_id, {}).get(hashtag, 'Apply as directed for best results')
+    
+    def _calculate_total_cost(self, products):
+        """Calculate estimated total cost for product recommendations"""
+        
+        total_min = 0
+        total_max = 0
+        
+        for product in products:
+            price_range = product['price_range']
+            # Extract numbers from price range like "RM 39-55"
+            import re
+            numbers = re.findall(r'\d+', price_range)
+            if len(numbers) >= 2:
+                total_min += int(numbers[0])
+                total_max += int(numbers[1])
+            elif len(numbers) == 1:
+                total_min += int(numbers[0])
+                total_max += int(numbers[0])
+        
+        return f"RM {total_min}-{total_max}"
+    
+    def _assess_malaysia_relevance(self, hashtag):
+        """Assess how relevant the hashtag is to Malaysian market"""
+        
+        relevance_factors = {
+            'barbiemakeup': 'High - Movie tie-in, social media viral',
+            'barbiecore': 'Very High - Instagram trend, Gen Z appeal',
+            'barbiepink': 'High - Iconic color, cross-generational',
+            'naturalmakeup': 'Very High - Perfect for Malaysian climate',
+            'cleangirl': 'High - Skincare focus popular in Malaysia',
+            'glammakeup': 'Medium - Special occasions, festivals',
+            'partyready': 'High - Malaysian party culture',
+            'glassskin': 'High - K-beauty influence in Malaysia',
+            'skincare': 'Very High - Skincare-conscious market'
+        }
+        
+        return relevance_factors.get(hashtag, 'Medium - Monitor trend development')
+    
+    def _get_general_hashtag_recommendations(self, hashtag):
+        """Get general recommendations for unmapped hashtags"""
+        
+        return {
+            'hashtag': hashtag,
+            'trend_description': f'General beauty trend analysis for #{hashtag}',
+            'color_palette': ['Versatile', 'Adaptable', 'Trend-appropriate'],
+            'look_style': 'Adaptable to trend requirements',
+            'target_audience': 'Beauty enthusiasts, Trend followers',
+            'recommended_products': [
+                {
+                    'product_id': 'true_match',
+                    'product_name': 'True Match Foundation',
+                    'category': 'Foundation',
+                    'price_range': 'RM 49-69',
+                    'description': 'Versatile foundation for any trend',
+                    'image_url': '/static/images/true_match.jpg',
+                    'availability': 'Very High',
+                    'humidity_suitable': True,
+                    'match_reason': 'Versatile foundation suitable for any trend',
+                    'application_tip': 'Apply as needed for trend-appropriate coverage'
+                }
+            ],
+            'application_tips': [
+                'Adapt products to match trend aesthetic',
+                'Consider Malaysian climate factors',
+                'Test products before trend launch'
+            ],
+            'marketing_angles': [
+                'Monitor trend development',
+                'Adapt to Malaysian preferences',
+                'Consider cultural factors'
+            ],
+            'total_products': 1,
+            'estimated_cost': 'RM 49-69',
+            'malaysia_relevance': 'Medium - Monitor trend development'
+        }
 
 # Initialize the Malaysia product engine
 malaysia_product_engine = MalaysiaProductEngine()
