@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-TrendSpotter Malaysia Backend - L'Oréal Datathon
+TrendZ Backend - L'Oréal Datathon
 Enhanced with Malaysia-specific features
 """
 
@@ -1130,7 +1130,7 @@ def generate_mock_chart_data():
     }
 
 if __name__ == '__main__':
-    print("🚀 Starting TrendSpotter Backend...")
+    print("🚀 Starting TrendZ Backend...")
     print("📊 Loading data from notebooks...")
     
     # Load data on startup

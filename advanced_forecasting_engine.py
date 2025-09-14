@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Advanced Trend Forecasting Engine for TrendSpotter Malaysia
+Advanced Trend Forecasting Engine for TrendZ
 Uses Prophet and LSTM models for trend lifecycle prediction
 """
 

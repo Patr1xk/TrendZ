@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-AI Chatbot Engine for TrendSpotter Malaysia
+AI Chatbot Engine for TrendZ
 Interactive AI assistant for beauty trend insights
 """
 import random
@@ -16,7 +16,7 @@ class AIChatbotEngine:
         # Predefined responses and knowledge base
         self.knowledge_base = {
             'greetings': [
-                "Hi! I'm TrendSpotter AI, your Malaysian beauty trend expert! 🇲🇾",
+                "Hi! I'm TrendZ AI, your Malaysian beauty trend expert! 🇲🇾",
                 "Hello! Ready to discover the latest beauty trends in Malaysia? ✨",
                 "Hey there! I'm here to help you navigate Malaysia's beauty landscape! 💄"
             ],

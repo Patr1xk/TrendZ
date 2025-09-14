@@ -1,4 +1,4 @@
-# TrendSpotter Malaysia – L'Oréal Datathon Prototype
+# TrendZ – L'Oréal Datathon Prototype
 
 ## 🎯 Overview
 This project is an AI-powered prototype to **identify and forecast emerging beauty trends in Malaysia** across social media.  
@@ -142,4 +142,4 @@ python app_backend.py
 - **Real-time Processing**: <1 second API response
 - **Dataset**: 92,759 videos processed
 
-**TrendSpotter Malaysia is production-ready for L'Oréal's datathon!** 🚀✨
+**TrendZ is production-ready for L'Oréal's datathon!** 🚀✨

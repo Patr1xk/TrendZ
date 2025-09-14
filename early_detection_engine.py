@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Early Detection Engine for TrendSpotter
+Early Detection Engine for TrendZ
 Detects emerging trends before they go mainstream
 """
 import pandas as pd

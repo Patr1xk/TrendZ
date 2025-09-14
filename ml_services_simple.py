@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Simplified ML Service for TrendSpotter
+Simplified ML Service for TrendZ
 Fast, rule-based predictions for real-time analysis
 """
 import random

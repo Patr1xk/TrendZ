@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Real API Integration for TrendSpotter
+Real API Integration for TrendZ
 Simulates real-time data fetching from external APIs
 """
 import random

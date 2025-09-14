@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Malaysia Product Mapping Engine for TrendSpotter
+Malaysia Product Mapping Engine for TrendZ
 L'Oréal Malaysia product mapping and localization
 """
 import random

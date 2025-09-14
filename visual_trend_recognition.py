@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Visual Trend Recognition System for TrendSpotter
+Visual Trend Recognition System for TrendZ
 AI-powered visual analysis of beauty trends
 """
 import random

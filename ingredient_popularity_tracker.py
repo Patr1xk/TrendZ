@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Ingredient Popularity Tracker for TrendSpotter
+Ingredient Popularity Tracker for TrendZ
 Tracks trending beauty ingredients and their popularity
 """
 import random

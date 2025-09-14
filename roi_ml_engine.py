@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-High-Accuracy ROI ML Engine for TrendSpotter
+High-Accuracy ROI ML Engine for TrendZ
 Advanced machine learning models for ROI prediction with optimized Trend and Lifecycle models
 """
 import pandas as pd

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Malaysia Opportunity Generator for TrendSpotter
+Malaysia Opportunity Generator for TrendZ
 Generates Malaysia-specific trend opportunities and campaigns
 """
 import random

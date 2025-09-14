@@ -1,7 +1,7 @@
-# TrendSpotter Malaysia - Complete System Flow
+# TrendZ - Complete System Flow
 
 ## 🎯 Overview
-TrendSpotter Malaysia is an AI-powered beauty trend intelligence system designed for L'Oréal's datathon. It provides real-time trend analysis, ROI predictions, and Malaysia-specific insights for beauty brands.
+TrendZ is an AI-powered beauty trend intelligence system designed for L'Oréal's datathon. It provides real-time trend analysis, ROI predictions, and Malaysia-specific insights for beauty brands.
 
 ## 🏗️ System Architecture
 
@@ -368,4 +368,4 @@ The system has achieved:
 - 🔧 **Controlled Augmentation**: SMOTE for rare classes without overfitting
 - 📈 **Comprehensive Evaluation**: Full metrics with actionable recommendations
 
-**TrendSpotter Malaysia is production-ready for L'Oréal's datathon!** 🚀✨
+**TrendZ is production-ready for L'Oréal's datathon!** 🚀✨

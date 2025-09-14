@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Content Creation Engine for TrendSpotter
+Content Creation Engine for TrendZ
 Automated content strategy and creation recommendations
 """
 import random

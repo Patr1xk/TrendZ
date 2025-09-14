@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-AI Trend Forecasting Engine for TrendSpotter
+AI Trend Forecasting Engine for TrendZ
 Advanced AI-powered trend prediction and analysis
 """
 import random

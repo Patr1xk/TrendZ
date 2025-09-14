@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Multimodal Trend Detection Engine for TrendSpotter Malaysia
+Multimodal Trend Detection Engine for TrendZ
 Combines text embeddings, audio analysis, and influencer signals
 """
 
