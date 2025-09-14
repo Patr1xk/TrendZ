@@ -152,10 +152,12 @@ def load_data_from_notebooks():
         videos_df['engagement_rate'] = videos_df['total_engagement'] / videos_df['viewCount'].replace(0, 1)
         videos_df['engagement_rate'] = videos_df['engagement_rate'].fillna(0)
         
-        # 🚀 SKIP HEAVY ML TRAINING ON STARTUP - DO LAZY LOADING INSTEAD
-        print("⚡ Skipping ML training for fast startup - will train on first API call")
-        # roi_ml_engine.train_models(videos_df)  # Commented out for fast startup
-        # early_detection_engine.train_models(videos_df)  # Commented out for fast startup
+        # 🚀 TRAIN ALL ML MODELS ON STARTUP FOR BETTER PERFORMANCE
+        print("🔄 Training all ML models on startup...")
+        roi_ml_engine.train_models(videos_df)
+        early_detection_engine.train_models(videos_df)
+        models_trained = True
+        print("✅ All ML models trained successfully on startup")
         
         # 🚀 SKIP SLOW API CALLS ON STARTUP - DO LAZY LOADING INSTEAD
         print("⚡ Skipping API calls for fast startup - will fetch on first request")
@@ -222,7 +224,7 @@ def generate_real_trends_data(videos_df, real_trending_hashtags, competitor_data
                 'total_engagement': int(total_views * avg_engagement)
             }
             
-            # High-Accuracy ML Predictions using real data
+            # High-Accuracy ML Predictions using real data (models already trained on startup)
             trend_score = roi_ml_engine.predict_trend_score(sample_video)
             lifecycle = roi_ml_engine.predict_lifecycle(sample_video)
             roi_prediction = roi_ml_engine.predict_high_accuracy_roi(sample_video)
@@ -1131,14 +1133,15 @@ def generate_mock_chart_data():
 
 if __name__ == '__main__':
     print("🚀 Starting TrendZ Backend...")
-    print("📊 Loading data from notebooks...")
+    print("📊 Loading data and training ML models...")
     
-    # Load data on startup
+    # Load data and train models on startup
     load_data_from_notebooks()
     load_watchlist_data()  # Load watchlist data
     
-    print("✅ Backend ready!")
+    print("✅ Backend ready with all ML models trained!")
     print("🌐 Dashboard available at: http://localhost:5000")
     print("📱 API endpoints available at: http://localhost:5000/api/")
+    print("🎯 All trends will show real ML predictions immediately!")
     
     app.run(debug=True, host='0.0.0.0', port=5000)

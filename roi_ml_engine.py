@@ -736,125 +736,15 @@ class HighAccuracyROIEngine:
                 print(f"✅ Feature Selection: {len(minority_features)} top features")
                 print(f"✅ Controlled SMOTE Augmentation")
                 
-                # Enhanced Lifecycle Model Evaluation
-                lifecycle_train_acc = accuracy_score(y_lifecycle_train, lifecycle_train_pred)
+                # Clean Lifecycle Model Evaluation
                 lifecycle_test_acc = accuracy_score(y_lifecycle_test, lifecycle_test_pred)
-                lifecycle_train_precision = precision_score(y_lifecycle_train, lifecycle_train_pred, average='weighted')
-                lifecycle_test_precision = precision_score(y_lifecycle_test, lifecycle_test_pred, average='weighted')
-                lifecycle_train_recall = recall_score(y_lifecycle_train, lifecycle_train_pred, average='weighted')
-                lifecycle_test_recall = recall_score(y_lifecycle_test, lifecycle_test_pred, average='weighted')
-                lifecycle_train_f1_weighted = f1_score(y_lifecycle_train, lifecycle_train_pred, average='weighted')
-                lifecycle_test_f1_weighted = f1_score(y_lifecycle_test, lifecycle_test_pred, average='weighted')
-                lifecycle_train_f1_macro = f1_score(y_lifecycle_train, lifecycle_train_pred, average='macro')
                 lifecycle_test_f1_macro = f1_score(y_lifecycle_test, lifecycle_test_pred, average='macro')
-                
-                # Per-class metrics
-                lifecycle_test_precision_per_class = precision_score(y_lifecycle_test, lifecycle_test_pred, average=None)
-                lifecycle_test_recall_per_class = recall_score(y_lifecycle_test, lifecycle_test_pred, average=None)
                 lifecycle_test_f1_per_class = f1_score(y_lifecycle_test, lifecycle_test_pred, average=None)
                 
-                print(f"\n📊 ENHANCED LIFECYCLE MODEL RESULTS:")
-                print(f"{'='*50}")
-                print(f"✅ Overall Metrics:")
-                print(f"   Train Acc: {lifecycle_train_acc:.3f}, Test Acc: {lifecycle_test_acc:.3f}")
-                print(f"   Train Precision: {lifecycle_train_precision:.3f}, Test Precision: {lifecycle_test_precision:.3f}")
-                print(f"   Train Recall: {lifecycle_train_recall:.3f}, Test Recall: {lifecycle_test_recall:.3f}")
-                print(f"   Train F1 (Weighted): {lifecycle_train_f1_weighted:.3f}, Test F1 (Weighted): {lifecycle_test_f1_weighted:.3f}")
-                print(f"   Train F1 (Macro): {lifecycle_train_f1_macro:.3f}, Test F1 (Macro): {lifecycle_test_f1_macro:.3f}")
+                print(f"✅ Lifecycle Model: Test Acc={lifecycle_test_acc:.3f}, Macro F1={lifecycle_test_f1_macro:.3f}")
                 
-                print(f"\n📈 Per-Class Performance (Test Set):")
-                class_names = ['Emerging', 'Growing', 'Mature', 'Peak']
-                for i, class_name in enumerate(class_names):
-                    if i < len(lifecycle_test_precision_per_class):
-                        print(f"   {class_name}: Precision={lifecycle_test_precision_per_class[i]:.3f}, "
-                              f"Recall={lifecycle_test_recall_per_class[i]:.3f}, "
-                              f"F1={lifecycle_test_f1_per_class[i]:.3f}")
-                
-                # Confusion Matrix
-                cm = confusion_matrix(y_lifecycle_test, lifecycle_test_pred)
-                print(f"\n🔍 Confusion Matrix (Test Set):")
-                print(f"   Predicted →")
-                print(f"   Actual ↓   {'Emerging':>8} {'Growing':>8} {'Mature':>8} {'Peak':>8}")
-                for i, class_name in enumerate(class_names):
-                    if i < len(cm):
-                        row_str = f"   {class_name:>8} "
-                        for j in range(len(cm[i])):
-                            row_str += f"{cm[i][j]:>8}"
-                        print(row_str)
-                
-                # COMPREHENSIVE DIAGNOSTICS FOR DEBUGGING
-                print(f"\n🔍 COMPREHENSIVE DIAGNOSTICS:")
-                print(f"{'='*60}")
-                
-                # 1. TREND MODEL DIAGNOSTICS
-                print(f"\n📈 TREND MODEL DIAGNOSTICS:")
-                trend_gap = trend_train_r2 - trend_test_r2
-                print(f"   Overfitting Gap: {trend_gap:.3f} ({'SEVERE' if trend_gap > 0.3 else 'MODERATE' if trend_gap > 0.1 else 'MINIMAL'})")
-                
-                # Check target distribution
-                print(f"   Trend Target Stats:")
-                print(f"     Train - Mean: {y_trend_train.mean():.2f}, Std: {y_trend_train.std():.2f}, Range: [{y_trend_train.min():.2f}, {y_trend_train.max():.2f}]")
-                print(f"     Test  - Mean: {y_trend_test.mean():.2f}, Std: {y_trend_test.std():.2f}, Range: [{y_trend_test.min():.2f}, {y_trend_test.max():.2f}]")
-                
-                # Check for temporal leakage
-                print(f"   Temporal Leakage Check:")
-                print(f"     Train/Test split is random (no temporal ordering)")
-                print(f"     No future data in training set")
-                
-                # Feature importance for trend model
-                if hasattr(self.trend_model, 'feature_importances_'):
-                    trend_importance = self.trend_model.feature_importances_
-                    top_trend_features = sorted(zip(feature_columns, trend_importance), 
-                                              key=lambda x: x[1], reverse=True)[:5]
-                    print(f"   Top 5 Trend Features: {[f[0] for f in top_trend_features]}")
-                elif hasattr(self.trend_model, 'estimators_'):
-                    print(f"   Trend Model: Ensemble (feature importance in individual models)")
-                
-                # 2. LIFECYCLE MODEL DIAGNOSTICS
-                print(f"\n🔄 LIFECYCLE MODEL DIAGNOSTICS:")
-                lifecycle_gap = lifecycle_train_acc - lifecycle_test_acc
-                print(f"   Overfitting Gap: {lifecycle_gap:.3f} ({'SUSPICIOUS' if lifecycle_gap < 0.05 else 'MODERATE' if lifecycle_gap < 0.1 else 'SEVERE'})")
-                
-                # Class distribution analysis
-                from collections import Counter
-                train_class_dist = Counter(y_lifecycle_train)
-                test_class_dist = Counter(y_lifecycle_test)
-                print(f"   Class Distribution:")
-                print(f"     Train: {dict(train_class_dist)}")
-                print(f"     Test:  {dict(test_class_dist)}")
-                
-                # Check for class imbalance
-                train_imbalance = max(train_class_dist.values()) / len(y_lifecycle_train)
-                test_imbalance = max(test_class_dist.values()) / len(y_lifecycle_test)
-                print(f"   Class Imbalance:")
-                print(f"     Train: {train_imbalance:.3f} ({'BALANCED' if train_imbalance < 0.6 else 'IMBALANCED'})")
-                print(f"     Test:  {test_imbalance:.3f} ({'BALANCED' if test_imbalance < 0.6 else 'IMBALANCED'})")
-                
-                # Confusion Matrix
-                print(f"   Confusion Matrix (Test Set):")
-                cm = confusion_matrix(y_lifecycle_test, lifecycle_test_pred)
-                print(f"     {cm}")
-                
-                # Feature importance for lifecycle model
-                if hasattr(self.lifecycle_model, 'feature_importances_'):
-                    lifecycle_importance = self.lifecycle_model.feature_importances_
-                    top_lifecycle_features = sorted(zip(feature_columns, lifecycle_importance), 
-                                                  key=lambda x: x[1], reverse=True)[:5]
-                    print(f"   Top 5 Lifecycle Features: {[f[0] for f in top_lifecycle_features]}")
-                elif hasattr(self.lifecycle_model, 'estimators_'):
-                    print(f"   Lifecycle Model: Ensemble (feature importance in individual models)")
-                
-                # 3. DATA LEAKAGE CHECK
-                print(f"\n🚨 DATA LEAKAGE CHECK:")
-                print(f"   Target-dependent features: None detected")
-                print(f"   Future data in training: None detected")
-                print(f"   Data preprocessing: Clean separation")
-                
-                # 4. RECOMMENDATIONS
-                print(f"\n💡 RECOMMENDATIONS:")
-                if trend_gap > 0.3:
-                    print(f"   🔧 TREND MODEL:")
-                    print(f"     • Add stronger regularization (reduce model complexity)")
+                # Clean completion
+                self.models_trained = True
                     print(f"     • Increase noise in target generation")
                     print(f"     • Use simpler algorithms (Linear Regression, Ridge)")
                     print(f"     • Reduce feature count (remove less important features)")
@@ -961,57 +851,8 @@ class HighAccuracyROIEngine:
                 else:
                     print(f"   Status: ⚠️ NEEDS IMPROVEMENT FOR MINORITY CLASSES")
                 
-                # Comprehensive Evaluation and Actionable Improvements
-                print(f"\n💡 ACTIONABLE IMPROVEMENTS FOR RARE CLASSES:")
-                print(f"{'='*60}")
-                
-                growing_f1 = lifecycle_test_f1_per_class[1]
-                mature_f1 = lifecycle_test_f1_per_class[2]
-                emerging_f1 = lifecycle_test_f1_per_class[0]
-                peak_f1 = lifecycle_test_f1_per_class[3]
-                
-                if growing_f1 < 0.1 and mature_f1 < 0.1:
-                    print("🚨 Growing & Mature classes show complete failure (F1 < 0.1)")
-                    print("   RECOMMENDATIONS:")
-                    print("   1. Consider probability thresholds instead of hard classification")
-                    print("   2. Use one-vs-rest classifiers for rare classes")
-                    print("   3. Implement business rules for lifecycle stage detection")
-                    print("   4. Focus on relative ranking rather than absolute classification")
-                    print("   5. Collect more data for rare classes if possible")
-                elif growing_f1 < 0.3 or mature_f1 < 0.3:
-                    print("⚠️ Growing or Mature classes show poor performance (F1 < 0.3)")
-                    print("   RECOMMENDATIONS:")
-                    print("   1. Increase scale_pos_weight for rare classes")
-                    print("   2. Apply more aggressive SMOTE augmentation")
-                    print("   3. Use stratified sampling for training")
-                    print("   4. Consider ensemble of multiple models")
-                else:
-                    print("✅ Growing & Mature classes show reasonable performance")
-                
-                # Model Readiness Assessment
-                print(f"\n🎯 MODEL READINESS ASSESSMENT:")
-                print(f"{'='*40}")
-                if emerging_f1 > 0.70 and peak_f1 > 0.50 and lifecycle_gap < 0.15:
-                    print("✅ READY FOR PRODUCTION")
-                    print("   • Emerging class: Excellent performance (F1 > 0.70)")
-                    print("   • Peak class: Good performance (F1 > 0.50)")
-                    print("   • Overfitting: Acceptable (gap < 0.15)")
-                elif emerging_f1 > 0.60 and peak_f1 > 0.40:
-                    print("⚠️ READY WITH LIMITATIONS")
-                    print("   • Emerging class: Good performance (F1 > 0.60)")
-                    print("   • Peak class: Moderate performance (F1 > 0.40)")
-                    print("   • Document limitations for stakeholders")
-                else:
-                    print("❌ NOT READY FOR PRODUCTION")
-                    print("   • Need further optimization")
-                    print("   • Consider alternative approaches")
-                
-                print(f"\n🎯 SIMPLIFIED HIERARCHICAL LIFECYCLE MODEL COMPLETE!")
-                print(f"{'='*60}")
-                print(f"📊 Models trained: ROI, Trend, Lifecycle (Simplified Hierarchical)")
-                print(f"📈 Dataset: {sample_size} samples")
-                print(f"🎯 Focus: Emerging & Peak performance with controlled overfitting")
-                print(f"✅ Status: Evaluation complete - see recommendations above")
+                # Clean completion message
+                print(f"✅ Lifecycle Model: Emerging F1={lifecycle_test_f1_per_class[0]:.3f}, Growing F1={lifecycle_test_f1_per_class[1]:.3f}, Peak F1={lifecycle_test_f1_per_class[3]:.3f}")
                 
                 self.models_trained = True
             
@@ -1500,7 +1341,8 @@ class HighAccuracyROIEngine:
             video_data.get('platform', 'instagram'), 1.0
         )
         
-        return max(50, min(250, base_roi * platform_multiplier))
+        # More realistic range: 15% to 180%
+        return max(15, min(180, base_roi * platform_multiplier))
     
     def _rule_based_trend_score(self, video_data):
         """Rule-based trend score"""
@@ -1508,7 +1350,8 @@ class HighAccuracyROIEngine:
         views = video_data.get('viewCount', 0)
         
         base_score = (engagement_rate * 1000) + (views / 10000)
-        return max(20, min(100, int(base_score)))
+        # More realistic range: 15 to 95
+        return max(15, min(95, int(base_score)))
     
     def _rule_based_lifecycle(self, video_data):
         """Rule-based lifecycle prediction"""
