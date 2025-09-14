@@ -745,18 +745,6 @@ class HighAccuracyROIEngine:
                 
                 # Clean completion
                 self.models_trained = True
-                    print(f"     • Increase noise in target generation")
-                    print(f"     • Use simpler algorithms (Linear Regression, Ridge)")
-                    print(f"     • Reduce feature count (remove less important features)")
-                    print(f"     • Add temporal features (rolling averages, lag features)")
-                
-                if lifecycle_gap < 0.05 and lifecycle_train_acc > 0.99:
-                    print(f"   🔧 LIFECYCLE MODEL:")
-                    print(f"     • Perfect training accuracy is suspicious")
-                    print(f"     • Check for data leakage or over-simple targets")
-                    print(f"     • Add more noise to target generation")
-                    print(f"     • Use simpler models to prevent memorization")
-                    print(f"     • Verify class distribution is realistic")
                 
                 # Cross-validation for more robust estimates (using simpler models to avoid VotingClassifier issues)
                 from sklearn.ensemble import RandomForestRegressor, RandomForestClassifier
@@ -813,43 +801,6 @@ class HighAccuracyROIEngine:
                     print("✅ Models show good generalization.")
                 else:
                     print("❌ Models show OVERFITTING! Need more regularization.")
-                
-                # SIMPLIFIED HIERARCHICAL LIFECYCLE SUMMARY
-                print(f"\n🎯 SIMPLIFIED HIERARCHICAL LIFECYCLE MODEL SUMMARY:")
-                print(f"{'='*70}")
-                print(f"✅ ROI Model: Maintained high performance (R² ~0.95)")
-                print(f"🚀 Trend Model: Maintained excellent performance (R² ~0.87)")
-                print(f"🔄 Lifecycle Model: SIMPLIFIED HIERARCHICAL APPROACH")
-                print(f"   • Step 1: Emerging vs Non-Emerging (Binary) with SMOTEENN")
-                print(f"   • Step 2: Peak vs Non-Peak (Binary) with SMOTEENN")
-                print(f"   • Step 3: Growing vs Mature (Binary) with SMOTE")
-                print(f"   • Cost-Sensitive: scale_pos_weight=1.5-3.0 per class")
-                print(f"   • Controlled Augmentation: SMOTE for rare classes")
-                print(f"   • Feature Selection: {len(minority_features)} top minority-predictive features")
-                print(f"   • Strong Regularization: n_estimators=20-25, max_depth=2")
-                print(f"   • Regularization: reg_alpha=3.0-4.0, reg_lambda=2.0-3.0")
-                print(f"📊 Total Features: {len(feature_columns)} → {len(minority_features)} selected")
-                print(f"📈 Sample Size: {sample_size} samples + controlled SMOTE")
-                print(f"🎯 Goal: Emerging F1 > 0.70, Peak F1 > 0.50, Overfitting gap ≤ 0.15")
-                
-                # Overfitting Check for Lifecycle
-                lifecycle_gap = lifecycle_train_acc - lifecycle_test_acc
-                print(f"\n🔍 LIFECYCLE OVERFITTING CHECK:")
-                print(f"   Train-Test Gap: {lifecycle_gap:.3f}")
-                if lifecycle_gap < 0.1:
-                    print(f"   Status: ✅ GOOD GENERALIZATION")
-                elif lifecycle_gap < 0.2:
-                    print(f"   Status: ⚠️ MODERATE OVERFITTING")
-                else:
-                    print(f"   Status: ❌ SEVERE OVERFITTING")
-                
-                print(f"   Test F1 (Macro): {lifecycle_test_f1_macro:.3f}")
-                if lifecycle_test_f1_macro > 0.6:
-                    print(f"   Status: ✅ EXCELLENT MINORITY CLASS PERFORMANCE")
-                elif lifecycle_test_f1_macro > 0.4:
-                    print(f"   Status: ⚖️ GOOD MINORITY CLASS PERFORMANCE")
-                else:
-                    print(f"   Status: ⚠️ NEEDS IMPROVEMENT FOR MINORITY CLASSES")
                 
                 # Clean completion message
                 print(f"✅ Lifecycle Model: Emerging F1={lifecycle_test_f1_per_class[0]:.3f}, Growing F1={lifecycle_test_f1_per_class[1]:.3f}, Peak F1={lifecycle_test_f1_per_class[3]:.3f}")
